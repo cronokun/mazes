@@ -32,6 +32,14 @@ module Maze
       columns * rows
     end
 
+    def to_s
+      AsciiDisplay.new(self).to_s
+    end
+
+    def inspect
+      "<# Grid @columns=#{columns} @rows=#{rows} >"
+    end
+
     private
 
     def generate_cells
