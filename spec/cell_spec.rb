@@ -8,18 +8,28 @@ module Maze
 
     describe "#link" do
       it "links given cell to current cell" do
-        cell.link(other_cell, to: :east)
+        cell.link(other_cell)
         expect(cell.links).to include(other_cell)
       end
 
       it "links both cells" do
-        cell.link(other_cell, to: :east)
+        cell.link(other_cell)
         expect(other_cell.links).to include(cell)
       end
 
       it "returns the cell object" do
-        resoult = cell.link(other_cell, to: :east)
-        expect(resoult).to eql(cell)
+        resoult = cell.link(other_cell)
+        expect(resoult).to eq(cell)
+      end
+
+      it "return nil if the cell to link to is nil" do
+        expect(cell.link(nil)).to eq(nil)
+      end
+
+      it "raises an error when trying to link non-adjacent cells" do
+        expect {
+          Cell.new(1,1).link Cell.new(2,2)
+        }.to raise_error(ArgumentError, "Trying to link non-adjacent cells!")
       end
     end
 
@@ -30,10 +40,10 @@ module Maze
       let(:south_cell) { Cell.new(2,1) }
 
       it "returns a list of linked cells" do
-        cell.link(east_cell, to: :east)
-            .link(west_cell, to: :west)
-            .link(north_cell, to: :north)
-            .link(south_cell, to: :south)
+        cell.link(east_cell)
+            .link(west_cell)
+            .link(north_cell)
+            .link(south_cell)
 
         expect(cell.links).to match_array([east_cell, north_cell, south_cell, west_cell])
       end
@@ -45,7 +55,7 @@ module Maze
 
     describe "#linked" do
       it "returns true if a given cell is linked to the current" do
-        cell.link(other_cell, to: :east)
+        cell.link(other_cell)
         expect(cell.linked?(other_cell)).to be_truthy
       end
 
@@ -55,7 +65,7 @@ module Maze
     end
 
     describe "#unlink" do
-      let(:linked_cell) { Cell.new(1,1).link(other_cell, to: :east) }
+      let(:linked_cell) { Cell.new(1,1).link(other_cell) }
 
       before { linked_cell.unlink(other_cell) }
 

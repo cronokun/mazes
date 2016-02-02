@@ -32,9 +32,9 @@ OUTPUT
 
       it "prints linked cells" do
         c1, c2, c3, c4 = grid[0,0], grid[0,1], grid[1,0], grid[1,1]
-        c1.link(c2, to: :east)
-        c3.link(c1, to: :north)
-        c3.link(c4, to: :east)
+        c1.link(c2)
+        c3.link(c1)
+        c3.link(c4)
 
         expect(grid.to_s).to eq(linked_output)
       end

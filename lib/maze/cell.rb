@@ -21,15 +21,10 @@ module Maze
       }
     end
 
-    # %i(east north south west).each do |direction|
-    #   define_method(direction) { @links[direction] }
-    # end
-
-    # TODO why this method need to know where to link other cell?
-    # TODO should it check if cells are adjustent?
-    def link(cell, to:)
-      @links[to] = cell
-      cell.link(self, to: OPPOSITE[to]) unless cell.linked?(self)
+    def link(cell)
+      return unless cell
+      @links[direction_to_link(cell)] = cell
+      cell.link(self) unless cell.linked?(self)
       self
     end
 
@@ -46,6 +41,16 @@ module Maze
       @links.delete(direction)
       cell.unlink(self) if cell.linked?(self)
       self
+    end
+
+    private
+
+    def direction_to_link(cell)
+      return :north if cell.column == column && cell.row.next == row
+      return :south if cell.column == column && cell.row.pred == row
+      return :west if cell.row == row && cell.column.next == column
+      return :east if cell.row == row && cell.column.pred == column
+      raise ArgumentError, "Trying to link non-adjacent cells!"
     end
   end
 end
