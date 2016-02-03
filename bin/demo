@@ -1,0 +1,40 @@
+#!/usr/bin/env ruby
+
+$: << File.join(File.dirname(__FILE__), "/../lib")
+require "optparse"
+require "maze"
+include Maze
+
+options = {
+ columns: 4,
+ rows: 4,
+ algorithm: Builders.constants
+}
+
+OptionParser.new do |opts|
+  opts.on("-aFORMAR", "--algorithm ALGORITHM", "Choose an algorithm to generate a maze (default -- user all available algorithms)") do |algorithm|
+    abort "Unknown algorithm #{algorithm}" unless Builders.constants.include?(algorithm.to_sym)
+    options.merge!(algorithm: [algorithm])
+  end
+
+  opts.on("--list-algorithms", "List available algorithms") do
+    puts "Available algorithms:",
+      Builders.constants.map { |alg| " * #{alg}\n" }
+    exit 0
+  end
+
+  opts.on("-sSIZE", "--size SIZE", "Grid size (single number or \"COLUMNSxROWS\")") do |size|
+    columns, rows = if size.include?("x")
+                      size.split("x").map(&:to_i)
+                    else
+                      [size.to_i, size.to_i]
+                    end
+    options.merge!({rows: rows, columns: columns})
+  end
+end.parse!
+
+options[:algorithm].each do |algorithm|
+  grid = Grid.new(options[:rows], options[:columns])
+  Builders.const_get(algorithm).new(grid).build
+  puts " #{algorithm}", grid.to_s, nil
+end
